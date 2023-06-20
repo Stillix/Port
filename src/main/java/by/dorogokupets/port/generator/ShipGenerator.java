@@ -9,7 +9,7 @@ public class ShipGenerator {
     private Random random = new Random();
 
     public Ship createShip() {
-        int maxAmountContainers = 50;
+        int maxAmountContainers = 40;
         int currentAmountContainers = random.nextInt(maxAmountContainers + 1);
         int shipId = ++shipIdCounter;
         return new Ship(shipId, currentAmountContainers);

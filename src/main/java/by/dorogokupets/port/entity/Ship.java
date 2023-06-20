@@ -16,15 +16,15 @@ public class Ship extends Thread {
     private static final String MSG_SHIP_FINISH_LOADING = " has finished loading.";
 
     private int shipId;
-    private int currentAmountContainers;
-    private int maxAmountContainers = 40;
+    private int currentAmountShipContainers;
+    private static final int maxAmountShipContainers = 40;
 
     public Ship() {
     }
 
     public Ship(int shipId, int amountContainers) {
         this.shipId = shipId;
-        this.currentAmountContainers = amountContainers;
+        this.currentAmountShipContainers = amountContainers;
     }
 
     @Override
@@ -34,23 +34,23 @@ public class Ship extends Thread {
             Pier pier = port.getPier();
             if (pier != null) {
                 logger.info(shipId + MSG_SHIP_IN_PIER + pier.getId());
-                logger.info(shipId + MSG_NUMBER_OF_CONTAINERS + currentAmountContainers);
+                logger.info(shipId + MSG_NUMBER_OF_CONTAINERS + currentAmountShipContainers);
 
-                while (currentAmountContainers > 0) {
+                while (currentAmountShipContainers > 0) {
                     TimeUnit.MILLISECONDS.sleep(330);
                     port.unloadContainers();
-                    currentAmountContainers--;
-                    logger.info(shipId + MSG_UNLOAD_CONTAINERS + currentAmountContainers);
+                    currentAmountShipContainers--;
+                    logger.info(shipId + MSG_UNLOAD_CONTAINERS + currentAmountShipContainers);
                 }
 
                 logger.info(shipId + MSG_SHIP_FINISH_UNLOADING);
 
 
-                while (port.getCurrentCountPortContainers() > 0 && currentAmountContainers < maxAmountContainers) {
+                while (port.getCurrentCountPortContainers() > 0 && currentAmountShipContainers < maxAmountShipContainers) {
                     TimeUnit.MILLISECONDS.sleep(330);
                     port.loadContainers();
-                    currentAmountContainers++;
-                    logger.info(shipId + MSG_LOAD_CONTAINERS + currentAmountContainers);
+                    currentAmountShipContainers++;
+                    logger.info(shipId + MSG_LOAD_CONTAINERS + currentAmountShipContainers);
                 }
 
                 logger.info(shipId + MSG_SHIP_FINISH_LOADING);
@@ -72,10 +72,10 @@ public class Ship extends Thread {
     }
 
     public int getAmountContainers() {
-        return currentAmountContainers;
+        return currentAmountShipContainers;
     }
 
     public void setAmountContainers(int amountContainers) {
-        this.currentAmountContainers = amountContainers;
+        this.currentAmountShipContainers = amountContainers;
     }
 }

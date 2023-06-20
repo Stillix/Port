@@ -5,27 +5,30 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Port {
     private static Logger logger = LogManager.getLogger();
-    private int maxCountPortContainers = 120;
+    private static final int MAX_COUNT_PORT_CONTAINERS = 200;
     private int currentCountPortContainers;
-    private int currentShipContainers;
 
-    private static final int countPiers = 4;
+    private static final int countPiers = 5;
     private ArrayDeque<Pier> piers;
     private static Lock lock = new ReentrantLock(true);
     private static AtomicBoolean isCreated = new AtomicBoolean(false);
     private static Port port;
+    private Condition  pierAvailable = lock.newCondition();
+
 
     private Port() {
         piers = new ArrayDeque<>(countPiers);
         for (int i = 1; i <= countPiers; i++) {
             piers.add(new Pier(i));
         }
-        currentCountPortContainers = maxCountPortContainers;
+        currentCountPortContainers = MAX_COUNT_PORT_CONTAINERS;
+
     }
 
     public static Port getInstanceUsingDoubleLocking() {
@@ -43,21 +46,23 @@ public class Port {
         return port;
     }
 
-    public Pier getPier() {
-        Pier pier = null;
+    public Pier getPier() throws InterruptedException {
         lock.lock();
         try {
-            pier = piers.poll();
+            while (piers.isEmpty()) {
+                pierAvailable.await();
+            }
+            return piers.poll();
         } finally {
             lock.unlock();
         }
-        return pier;
     }
 
     public void releasePier(Pier pier) {
         lock.lock();
         try {
             piers.add(pier);
+            pierAvailable.signal();
         } finally {
             lock.unlock();
         }
@@ -66,7 +71,6 @@ public class Port {
     public void unloadContainers() {
         lock.lock();
         try {
-            currentShipContainers--;
             currentCountPortContainers++;
         } finally {
             lock.unlock();
@@ -76,7 +80,6 @@ public class Port {
     public void loadContainers() {
         lock.lock();
         try {
-            currentShipContainers++;
             currentCountPortContainers--;
         } finally {
             lock.unlock();
@@ -84,14 +87,10 @@ public class Port {
     }
 
     public int getMaxCountPortContainers() {
-        return maxCountPortContainers;
+        return MAX_COUNT_PORT_CONTAINERS;
     }
 
     public int getCurrentCountPortContainers() {
         return currentCountPortContainers;
-    }
-
-    public int getCurrentShipContainers() {
-        return currentShipContainers;
     }
 }
