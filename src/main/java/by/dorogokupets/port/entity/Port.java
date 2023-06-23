@@ -13,18 +13,17 @@ public class Port {
     private static Logger logger = LogManager.getLogger();
     private static final int MAX_COUNT_PORT_CONTAINERS = 200;
     private int currentCountPortContainers;
-
-    private static final int countPiers = 5;
+    private static final int COUNT_PIERS = 5;
     private ArrayDeque<Pier> piers;
     private static Lock lock = new ReentrantLock(true);
     private static AtomicBoolean isCreated = new AtomicBoolean(false);
     private static Port port;
-    private Condition  pierAvailable = lock.newCondition();
+    private static Condition pierAvailable = lock.newCondition();
 
 
     private Port() {
-        piers = new ArrayDeque<>(countPiers);
-        for (int i = 1; i <= countPiers; i++) {
+        piers = new ArrayDeque<>(COUNT_PIERS);
+        for (int i = 1; i <= COUNT_PIERS; i++) {
             piers.add(new Pier(i));
         }
         currentCountPortContainers = MAX_COUNT_PORT_CONTAINERS;
