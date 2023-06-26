@@ -23,10 +23,6 @@ public class Ship extends Thread {
         Pier pier = null;
         try {
             pier = port.getPier();
-        } catch (InterruptedException e) {
-            logger.error("Error get pier" + e);
-        }
-        try {
             if (pier != null) {
                 logger.info(shipId + ShipMessages.MSG_SHIP_IN_PIER + pier.getId());
                 logger.info(shipId + ShipMessages.MSG_NUMBER_OF_CONTAINERS + currentAmountShipContainers);
