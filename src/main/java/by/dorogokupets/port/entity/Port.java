@@ -85,10 +85,6 @@ public class Port {
         }
     }
 
-    public int getMaxCountPortContainers() {
-        return MAX_COUNT_PORT_CONTAINERS;
-    }
-
     public int getCurrentCountPortContainers() {
         return currentCountPortContainers;
     }
